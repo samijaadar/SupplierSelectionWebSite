@@ -155,7 +155,7 @@ def user_management_page():
             cols[3].write(user[4])  # created_at
 
             # Don't allow deleting yourself
-            if user[0] != st.session_state.user[0] and cols[4].button("Delete", key=f"delete_{user[0]}"):
+            if user[0] != st.session_state.user[0] and cols[4].button("X", key=f"delete_{user[0]}"):
                 if delete_user(user[0]):
                     st.success(f"User {user[1]} deleted successfully!")
                     st.rerun()
