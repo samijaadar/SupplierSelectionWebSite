@@ -133,7 +133,7 @@ def dashboard_page():
                 ContentType="text/csv"
             )
             # --- Upload company metadata ---
-            company_info = f"User: {st.session_state.user[1]}\nCompany Name: {company_name}\nContact Email: {contact_email}\n"
+            company_info = f"{st.session_state.user[1]}\n{company_name}\n{contact_email}\n"
             s3_client.put_object(
                 Bucket=bucket_name,
                 Key=f"{folder_name}company_info.txt",
