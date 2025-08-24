@@ -2,6 +2,7 @@ import openai
 import json
 import re
 from openai import OpenAI
+import markdown
 
 openai.api_key = "sk-b0b211a091df40c0acac8b9bfba45720"
 openai.base_url = "https://api.deepseek.com"
@@ -10,70 +11,6 @@ openai.api_key = "sk-b0b211a091df40c0acac8b9bfba45720"
 openai.base_url = "https://api.deepseek.com"
 
 client = OpenAI(api_key="sk-b0b211a091df40c0acac8b9bfba45720", base_url="https://api.deepseek.com")
-def scenario_generator_agent(data, columns):
-    prompt = f"""
-        You are a geopolitical risk analyst AI specializing in early warning systems. Based on the following real-time event feed, assess the regional stability impact. Identify key actors, historical context, and probability of escalation.
-
-Given the following supplier attributes: {columns} and aggregated risks: {data}, generate a disruption scenario in JSON format with percentage adjustments to given attributes
-
-Format each event like this:
-- Event: [short title]
-- Date: [yyyy-mm-dd]
-- Location: [city, country]
-- Description: [1–2 sentence impact summary]
-
-Given the following event and supplier context, simulate the likely business impact across key KPIs.
-
-Return only valid JSON with the following structure:
-
-  "scenario_name": "[Location]",
-  "description": "[Short explanation of how the event impacts the supplier]",
-  "adjustments": 
-    "Attribut_1": "[% change]",
-    "Attribut_2": "[% change]",
-    ....
-
-
-    """
-
-
-    response = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[{"role": "system", "content": "You are a helpful assistant"},
-                  {"role": "user", "content": prompt}],
-        stream=False
-    )
-
-    resp = response.choices[0].message.content
-
-    print(resp)
-
-def events_detector_agent(data):
-    prompt = f"""
-    You are a geopolitical risk analyst AI specializing in early warning systems. Based on the following real-time event feed, assess the regional stability impact. Identify for teh evet that can affect supply chain supplier to achieve there work the following information  key actors, historical context, and probability of escalation.
-
-
-    return the result as json document with list of events and Format each event like this:
-    - Event: [short title]
-    - Date: [yyyy-mm-dd]
-    - Location: [city, country]
-    - Description: [1–2 sentence impact summary]
-
-    Event Feed:
-    {data}
-    
-    """
-
-    response = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[{"role": "system", "content": "You are a helpful assistant"},
-                  {"role": "user", "content": prompt}],
-        stream=False
-    )
-
-    resp = response.choices[0].message.content
-
-    print(resp)
 
 def generate_perturbation(columns):
 
@@ -92,25 +29,40 @@ def generate_perturbation(columns):
        "Qualité": 0.2,
        "Cost": 0.5
      }}
+     
+     with well formated and detailed explanation of scenario
      """
 
-    response = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[{"role": "system", "content": "You are a helpful assistant"},
-            {"role": "user", "content": prompt}],
-        stream=False
-    )
+    def is_valid(data):
+        """Check that all numeric values are between 0 and 1 (exclusive)."""
+        return all(isinstance(v, (int, float)) and 0 < v < 1 for v in data.values())
 
-    resp = response.choices[0].message.content
+    for attempt in range(5):
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant"},
+                {"role": "user", "content": prompt}
+            ],
+            stream=False
+        )
 
-    match = re.search(r'\{.*}', resp, re.DOTALL)
-    if match:
+        print(response)
+        resp = response.choices[0].message.content
+        resp = markdown.markdown(resp)
+        match = re.search(r'\{.*\}', resp, re.DOTALL)
+        if not match:
+            continue  # try again if no JSON found
+
         json_str = match.group(0)
+
         try:
             perturbation_data = json.loads(json_str)
-        except json.JSONDecodeError as e:
-            print("Failed to decode JSON:", e)
-    else:
-        print("No JSON found")
+        except json.JSONDecodeError:
+            continue  # invalid JSON, try again
 
-    return resp, perturbation_data
+        if is_valid(perturbation_data):
+            return resp, perturbation_data
+        # else: retry until valid
+
+    raise ValueError("Failed to generate valid perturbation after several retries")

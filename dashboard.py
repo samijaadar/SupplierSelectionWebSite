@@ -151,12 +151,12 @@ def dashboard_page():
             )
             # --- Upload company metadata ---
             company_info = f"{st.session_state.user[1]}\n{company_name}\n{contact_email}\n"
-            # s3_client.put_object(
-            #     Bucket=bucket_name,
-            #     Key=f"{folder_name}company_info.txt",
-            #     Body=company_info.encode("utf-8"),
-            #     ContentType="text/plain"
-            # )
+            s3_client.put_object(
+                Bucket=bucket_name,
+                Key=f"{folder_name}company_info.txt",
+                Body=company_info.encode("utf-8"),
+                ContentType="text/plain"
+            )
 
             beneficial = edited_df[edited_df['Beneficial']]['Criterion'].tolist()
             non_beneficial = edited_df[~edited_df['Beneficial']]['Criterion'].tolist()
