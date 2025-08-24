@@ -4,6 +4,23 @@ import numpy as np
 from datetime import datetime
 import boto3
 
+from suppSelectionRankModule.supplierRankingSys import SupplierRankingSystem
+import asyncio
+import streamlit as st
+from concurrent.futures import ThreadPoolExecutor
+
+# Define a function to run sync code in a thread
+executor = ThreadPoolExecutor()
+
+
+async def run_system_async(system, df):
+    loop = asyncio.get_running_loop()
+
+    # Use a lambda or functools.partial to pass the function without calling it
+    result = await loop.run_in_executor(executor, lambda: system.rank(df))
+
+    return result
+
 def dashboard_page():
 
 
@@ -134,12 +151,19 @@ def dashboard_page():
             )
             # --- Upload company metadata ---
             company_info = f"{st.session_state.user[1]}\n{company_name}\n{contact_email}\n"
-            s3_client.put_object(
-                Bucket=bucket_name,
-                Key=f"{folder_name}company_info.txt",
-                Body=company_info.encode("utf-8"),
-                ContentType="text/plain"
-            )
+            # s3_client.put_object(
+            #     Bucket=bucket_name,
+            #     Key=f"{folder_name}company_info.txt",
+            #     Body=company_info.encode("utf-8"),
+            #     ContentType="text/plain"
+            # )
 
+            beneficial = edited_df[edited_df['Beneficial']]['Criterion'].tolist()
+            non_beneficial = edited_df[~edited_df['Beneficial']]['Criterion'].tolist()
+            weights = dict(zip(edited_df['Criterion'], edited_df['Weight']))
+
+            system = SupplierRankingSystem(beneficial, non_beneficial, weights)
+            with st.spinner("Running system..."):
+                asyncio.run(run_system_async(system, df))
             # Streamlit success message
             st.success(f"Uploaded: `{folder_name}`")
