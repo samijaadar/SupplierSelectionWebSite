@@ -99,22 +99,22 @@ class SupplierRankingSystem:
                 resp, perturbation_data = generate_perturbation(numerical_cols)
 
                 # # Define the JSON strings
-                json_strings = [
-                    '{"Cost": 0.8, "Quality": 0.6, "Delivery Time": 0.2}',
-                    '{"Cost": 0.3, "Production Capacity": 0.9, "Delivery Time": 0.5}',
-                    '{"Annual Revenue (USD)": 0.6, "Quality": 0.4, "Reliability": 0.7}',
-                    '{"Production Capacity": 0.6, "Cost": 0.4, "Reliability": 0.3}'
-                ]
+                # json_strings = [
+                #     '{"Cost": 0.8, "Quality": 0.6, "Delivery Time": 0.2}',
+                #     '{"Cost": 0.3, "Production Capacity": 0.9, "Delivery Time": 0.5}',
+                #     '{"Annual Revenue (USD)": 0.6, "Quality": 0.4, "Reliability": 0.7}',
+                #     '{"Production Capacity": 0.6, "Cost": 0.4, "Reliability": 0.3}'
+                # ]
                 #
                 # # Choose one randomly and parse it into a Python dictionary
-                perturbation_data = json.loads(random.choice(json_strings))
+                #perturbation_data = json.loads(random.choice(json_strings))
 
+                print(resp)
                 perturbation_results = self.analyze_individual_supplier_perturbations(df, result,
                                                                                         perturbation_data)
-
                 perturbation_results = calculate_fr(perturbation_results)
 
-                pdfGenerator.generate_report(result, perturbation_data , perturbation_results)
+                pdfGenerator.generate_report(result, resp , perturbation_results)
                 # perturbation_results.to_csv('perturbation_results.csv', index=False)
                 return result, perturbation_data , perturbation_results
         except Exception as e:
