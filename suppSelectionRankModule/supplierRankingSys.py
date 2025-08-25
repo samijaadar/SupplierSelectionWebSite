@@ -119,7 +119,7 @@ class SupplierRankingSystem:
                 perturbation_results_file = f'perturbation_results_{company}.csv'
                 initial_ranking_results_file = f'initial_ranking_results_{company}.csv'
                 perturbation_results.to_csv(perturbation_results_file, index=False)
-                perturbation_results.to_csv(initial_ranking_results_file, index=False)
+                result.to_csv(initial_ranking_results_file, index=False)
                 send_email(mail, [perturbation_results_file, initial_ranking_results_file,report_file])
                 return result, perturbation_data , perturbation_results
         except Exception as e:
