@@ -64,8 +64,8 @@ def add_top_suppliers(elements, df_split, custom_heading3):
         elements.append(table)
         elements.append(Spacer(1, 12))
 
-def  generate_report(initial_df, perturbation, perturbated_df):
-    doc = SimpleDocTemplate("report.pdf", pagesize=A4)
+def  generate_report(initial_df, perturbation, perturbated_df, report_file):
+    doc = SimpleDocTemplate(report_file, pagesize=A4)
     styles = getSampleStyleSheet()
     elements = []
     custom_heading2 = ParagraphStyle(

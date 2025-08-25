@@ -10,6 +10,7 @@ from sklearn.neural_network import MLPRegressor
 import streamlit as st
 
 import pdfGenerator
+from mailSender import send_email
 from suppSelectionRankModule.genAi import generate_perturbation
 from suppSelectionRankModule.rankingUtils import compare_supplier_rankings, calculate_fr
 
@@ -87,7 +88,7 @@ class SupplierRankingSystem:
 
         return pd.concat(all_comparisons, ignore_index=True).sort_values('Rank_Change', ascending=False)
 
-    def rank(self, df):
+    def rank(self, df, company, mail):
         try:
             result = self.generate_rankings(df)
             if not result.empty:
@@ -113,9 +114,13 @@ class SupplierRankingSystem:
                 perturbation_results = self.analyze_individual_supplier_perturbations(df, result,
                                                                                         perturbation_data)
                 perturbation_results = calculate_fr(perturbation_results)
-
-                pdfGenerator.generate_report(result, resp , perturbation_results)
-                # perturbation_results.to_csv('perturbation_results.csv', index=False)
+                report_file = f'report_{company}.pdf'
+                pdfGenerator.generate_report(result, resp , perturbation_results, report_file)
+                perturbation_results_file = f'perturbation_results_{company}.csv'
+                initial_ranking_results_file = f'initial_ranking_results_{company}.csv'
+                perturbation_results.to_csv(perturbation_results_file, index=False)
+                perturbation_results.to_csv(initial_ranking_results_file, index=False)
+                send_email(mail, [perturbation_results_file, initial_ranking_results_file,report_file])
                 return result, perturbation_data , perturbation_results
         except Exception as e:
             print(f"Error during processing: {e}")
