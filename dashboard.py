@@ -50,7 +50,7 @@ def dashboard_page():
         st.stop()
 
     if company_name and contact_email and uploaded_file:
-        df = pd.read_csv(uploaded_file, nrows=10)
+        df = pd.read_csv(uploaded_file, nrows=1)
         st.success("File uploaded successfully!")
         st.dataframe(df.head(10))
 
@@ -163,7 +163,6 @@ def dashboard_page():
             weights = dict(zip(edited_df['Criterion'], edited_df['Weight']))
 
             system = SupplierRankingSystem(beneficial, non_beneficial, weights)
-            with st.spinner("Running system..."):
-                asyncio.run(run_system_async(system, df, company_name, contact_email))
+            system.rank(df, company_name, contact_email)
             # Streamlit success message
             st.success(f"Uploaded: `{folder_name}`")
