@@ -114,13 +114,6 @@ class SupplierRankingSystem:
                 perturbation_results = self.analyze_individual_supplier_perturbations(df, result,
                                                                                         perturbation_data)
                 perturbation_results = calculate_fr(perturbation_results)
-                report_file = f'report_{company}.pdf'
-                pdfGenerator.generate_report(result, resp , perturbation_results, report_file)
-                perturbation_results_file = f'perturbation_results_{company}.csv'
-                initial_ranking_results_file = f'initial_ranking_results_{company}.csv'
-                perturbation_results.to_csv(perturbation_results_file, index=False)
-                result.to_csv(initial_ranking_results_file, index=False)
-                send_email(mail, [perturbation_results_file, initial_ranking_results_file,report_file])
                 return result, perturbation_data , perturbation_results
         except Exception as e:
             print(f"Error during processing: {e}")
