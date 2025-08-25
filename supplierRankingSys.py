@@ -1,18 +1,11 @@
-import json
-import random
-
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
-from sklearn.neural_network import MLPRegressor
 import streamlit as st
 
-import pdfGenerator
-from mailSender import send_email
-from suppSelectionRankModule.genAi import generate_perturbation
-from suppSelectionRankModule.rankingUtils import compare_supplier_rankings, calculate_fr
+from rankingUtils import compare_supplier_rankings
 
 
 class SupplierRankingSystem:

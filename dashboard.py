@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 import boto3
 
-from suppSelectionRankModule.supplierRankingSys import SupplierRankingSystem
+from supplierRankingSys import SupplierRankingSystem
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
