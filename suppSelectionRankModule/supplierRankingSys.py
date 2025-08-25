@@ -89,30 +89,4 @@ class SupplierRankingSystem:
         return pd.concat(all_comparisons, ignore_index=True).sort_values('Rank_Change', ascending=False)
 
     def rank(self, df, company, mail):
-        try:
-            result = self.generate_rankings(df)
-            if not result.empty:
-                # config_summary = edited_df.copy()
-                # config_summary['Type'] = np.where(config_summary['Beneficial'], 'Beneficial', 'Non-Beneficial')
-                ##st.dataframe(config_summary[['Criterion', 'Type', 'Weight']])
-
-                numerical_cols = df.select_dtypes(include=['int64', 'float64']).columns
-                #resp, perturbation_data = generate_perturbation(numerical_cols)
-
-                # # Define the JSON strings
-                json_strings = [
-                    '{"Cost": 0.8, "Quality": 0.6, "Delivery Time": 0.2}',
-                    '{"Cost": 0.3, "Production Capacity": 0.9, "Delivery Time": 0.5}',
-                    '{"Annual Revenue (USD)": 0.6, "Quality": 0.4, "Reliability": 0.7}',
-                    '{"Production Capacity": 0.6, "Cost": 0.4, "Reliability": 0.3}'
-                ]
-                #
-                # # Choose one randomly and parse it into a Python dictionary
-                perturbation_data = json.loads(random.choice(json_strings))
-
-                perturbation_results = self.analyze_individual_supplier_perturbations(df, result,
-                                                                                        perturbation_data)
-                perturbation_results = calculate_fr(perturbation_results)
-                return result, perturbation_data , perturbation_results
-        except Exception as e:
-            print(f"Error during processing: {e}")
+        print("hello")
