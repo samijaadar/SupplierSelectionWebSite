@@ -1,6 +1,5 @@
 import json
 import random
-import time
 
 import pandas as pd
 import numpy as np
@@ -90,15 +89,35 @@ class SupplierRankingSystem:
         return pd.concat(all_comparisons, ignore_index=True).sort_values('Rank_Change', ascending=False)
 
     def rank(self, df, company, mail):
-        time.sleep(20)
         try:
+            result = self.generate_rankings(df)
+            if not result.empty:
+
+                numerical_cols = df.select_dtypes(include=['int64', 'float64']).columns
+                resp, perturbation_data = generate_perturbation(numerical_cols)
+
+                # # Define the JSON strings
+                # json_strings = [
+                #     '{"Cost": 0.8, "Quality": 0.6, "Delivery Time": 0.2}',
+                #     '{"Cost": 0.3, "Production Capacity": 0.9, "Delivery Time": 0.5}',
+                #     '{"Annual Revenue (USD)": 0.6, "Quality": 0.4, "Reliability": 0.7}',
+                #     '{"Production Capacity": 0.6, "Cost": 0.4, "Reliability": 0.3}'
+                # ]
+                #
+                # # Choose one randomly and parse it into a Python dictionary
+                #perturbation_data = json.loads(random.choice(json_strings))
+
+                print(resp)
+                perturbation_results = self.analyze_individual_supplier_perturbations(df, result,
+                                                                                        perturbation_data)
+                perturbation_results = calculate_fr(perturbation_results)
                 report_file = f'report_{company}.pdf'
-                pdfGenerator.generate_report(df, "resp" , df, report_file)
+                pdfGenerator.generate_report(result, resp , perturbation_results, report_file)
                 perturbation_results_file = f'perturbation_results_{company}.csv'
                 initial_ranking_results_file = f'initial_ranking_results_{company}.csv'
-                df.to_csv(perturbation_results_file, index=False)
-                df.to_csv(initial_ranking_results_file, index=False)
+                perturbation_results.to_csv(perturbation_results_file, index=False)
+                perturbation_results.to_csv(initial_ranking_results_file, index=False)
                 send_email(mail, [perturbation_results_file, initial_ranking_results_file,report_file])
-                return df, "test" , df
+                return result, perturbation_data , perturbation_results
         except Exception as e:
             print(f"Error during processing: {e}")

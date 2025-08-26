@@ -128,4 +128,3 @@ def dashboard_page():
             system = SupplierRankingSystem(beneficial, non_beneficial, weights)
             st.success(f"You will receive the report by email in a few minutes.")
             asyncio.run(run_system_async(system, df, company_name, contact_email))
-            st.success(f"Uploaded: ")
