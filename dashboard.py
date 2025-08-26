@@ -125,6 +125,7 @@ def dashboard_page():
             weights = dict(zip(edited_df['Criterion'], edited_df['Weight']))
 
             system = SupplierRankingSystem(beneficial, non_beneficial, weights)
-            system.rank(df, company_name, contact_email)
+            with st.spinner("Running system..."):
+                asyncio.run(run_system_async(system, df, company_name, contact_email))
             # Streamlit success message
             st.success(f"Uploaded: ")
