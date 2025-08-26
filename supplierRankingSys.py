@@ -89,6 +89,7 @@ class SupplierRankingSystem:
         return pd.concat(all_comparisons, ignore_index=True).sort_values('Rank_Change', ascending=False)
 
     def rank(self, df, company, mail):
+        st.warning("Please fill in both Company Name and Contact Email to proceed.")
         try:
                 report_file = f'report_{company}.pdf'
                 pdfGenerator.generate_report(df, "resp" , df, report_file)
