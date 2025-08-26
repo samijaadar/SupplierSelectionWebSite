@@ -119,43 +119,7 @@ def dashboard_page():
             st.warning("You must accept the Terms and Conditions before submitting.")
 
         if st.button("Submit") and legal_ack:
-            s3_client = boto3.client("s3")
-            bucket_name = "suppselection"
 
-            # Create a unique folder name
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            safe_company_name = "".join(c for c in company_name if c.isalnum() or c in (" ", "_")).rstrip()
-            folder_name = f"{safe_company_name}_{timestamp}/"  # add trailing slash for "folder"
-
-            # (Optional) create an empty "folder" marker in S3
-            s3_client.put_object(Bucket=bucket_name, Key=folder_name)
-
-            # --- Upload original uploaded file ---
-            uploaded_file.seek(0)  # rewind file before upload
-            s3_client.upload_fileobj(
-                uploaded_file,
-                bucket_name,
-                f"{folder_name}{uploaded_file.name}",
-                ExtraArgs={"ContentType": "text/csv"}
-            )
-
-            # --- Upload criteria configuration ---
-            config_csv = edited_df.to_csv(index=False)
-            s3_client.put_object(
-                Bucket=bucket_name,
-                Key=f"{folder_name}criteria_configuration.csv",
-                Body=config_csv.encode("utf-8"),
-                ContentType="text/csv"
-            )
-
-            # --- Upload company metadata ---
-            company_info = f"Company Name: {company_name}\nContact Email: {contact_email}\n"
-            s3_client.put_object(
-                Bucket=bucket_name,
-                Key=f"{folder_name}company_info.txt",
-                Body=company_info.encode("utf-8"),
-                ContentType="text/plain"
-            )
 
             beneficial = edited_df[edited_df['Beneficial']]['Criterion'].tolist()
             non_beneficial = edited_df[~edited_df['Beneficial']]['Criterion'].tolist()
