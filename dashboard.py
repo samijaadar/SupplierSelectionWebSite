@@ -5,6 +5,7 @@ from datetime import datetime
 import boto3
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from io import StringIO
 
 # Define a function to run sync code in a thread
 executor = ThreadPoolExecutor()
