@@ -130,7 +130,7 @@ def dashboard_page():
             s3_client.put_object(Bucket=bucket_name, Key=folder_name)
 
             # --- Upload original uploaded file ---
-            data = df.to_csv("data.csv", index=False)
+            data = df.to_csv(index=False)
             s3_client.put_object(
                 Bucket=bucket_name,
                 Key=f"{folder_name}data.csv",
