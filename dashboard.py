@@ -134,7 +134,7 @@ def dashboard_page():
             s3_client.put_object(
                 Bucket=bucket_name,
                 Key=f"{folder_name}data.csv",
-                Body=config_csv.encode("utf-8"),
+                Body=data.encode("utf-8"),
                 ContentType="text/csv"
             )
 
