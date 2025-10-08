@@ -130,14 +130,12 @@ def dashboard_page():
             s3_client.put_object(Bucket=bucket_name, Key=folder_name)
 
             # --- Upload original uploaded file ---
-            csv_buffer = StringIO()
-            df.to_csv(csv_buffer, index=False)
-            uploaded_file.seek(0)  # rewind file before upload
-            s3_client.upload_fileobj(
-                csv_buffer,
-                bucket_name,
-                f"{folder_name}data.csv",
-                ExtraArgs={"ContentType": "text/csv"}
+            data = df.to_csv("data.csv", index=False)
+             s3_client.put_object(
+                Bucket=bucket_name,
+                Key=f"{folder_name}data.csv",
+                Body=config_csv.encode("utf-8"),
+                ContentType="text/csv"
             )
 
             # --- Upload criteria configuration ---
